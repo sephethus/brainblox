@@ -13,11 +13,56 @@
             <button class="prev" onclick="showPreviousCard()"></button>
             <div class="card-container">
                 {% for card in flashcards %}
-                <div class="flashcard" id="flashcard-{{ card.id }}" style="display: none;" onclick="this.classList.toggle('flipped')">
+                <div class="flashcard" id="flashcard-{{ card.id }}" style="display: {% if card.id == selected_card_id %}block{% else %}none{% endif %};">
                     <div class="flashcard-inner">
                         <div class="flashcard-front">
                             <p>{{ card.question | safe }}</p>
                             <p class="card-number" id="card-number-{{ card.id }}"></p>
+                            <form method="POST" action="{{ url_for('submit_answer', id=card.id) }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <div class="form-group">
+                                    {% for choice in card.choices %}
+                                    <div>
+                                        <input type="radio" name="user_answer" value="{{ choice.id }}" id="choice-{{ choice.id }}" 
+                                            {% if user_answer and user_answer == str(choice.id) %}checked{% endif %}>
+                                        
+                                        <label for="choice-{{ choice.id }}"
+                                            {% if feedback == 'correct' and correct_choice.id == choice.id %}
+                                                style="background-color: lightgreen;"  <!-- Highlight correct -->
+                                            {% elif feedback == 'incorrect' and user_answer == str(choice.id) %}
+                                                style="background-color: lightcoral;"  <!-- Highlight wrong answer in red -->
+                                            {% elif feedback == 'incorrect' and correct_choice.id == choice.id %}
+                                                style="background-color: lightgreen;"  <!-- Highlight correct when wrong answer is given -->
+                                            {% endif %}>
+                                            {{ choice.content }}
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% if not show_explanation %}
+                                    <button type="submit" class="btn btn-primary">Submit Answer</button>
+                                {% endif %}
+                            </form>
+                            <!-- Feedback message (Correct/Incorrect) -->
+                            {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                <div class="feedback-message">
+                                    <p>{{ messages[0] }}</p>
+                                </div>
+                            {% endif %}
+                            {% endwith %}
+
+                            <!-- Modal for Explanation (shown after answer submission) -->
+                            {% if show_explanation %}
+                            <button class="btn-alt" onclick="document.getElementById('explanation-modal-{{ card.id }}').style.display='block'">Show Explanation</button>
+                            <div id="explanation-modal-{{ card.id }}" class="modal" style="display:none;">
+                                <div class="modal-content">
+                                    <span class="close" onclick="document.getElementById('explanation-modal-{{ card.id }}').style.display='none'">&times;</span>
+                                    <p>{{ card.explanation }}</p>
+                                </div>
+                            </div>
+                            {% endif %}
+
                             {% if card.additional_content and card.additional_content|striptags|trim != '' %}
                                 <script>console.log('Additional content for card {{ card.id }}: {{ card.additional_content }}');</script>
                                 <a href="javascript:void(0);" onclick="openModal(event, {{ card.id }})" class="view-link">View More</a>
@@ -25,13 +70,9 @@
                                 <script>console.log('No additional content for card {{ card.id }}');</script>
                             {% endif %}
                         </div>
-                        <div class="flashcard-back">
-                            <div class="flashcard-content">
-                                <p>{{ card.answer }}</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
+
                 <div id="modal-{{ card.id }}" class="modal">
                     <div class="modal-content">
                         <span class="close" onclick="closeModal({{ card.id }})">&times;</span>
@@ -42,10 +83,18 @@
             </div>
             <button class="next" onclick="showNextCard()"></button>
         </div>
-        <button class="add-button" onclick="window.location.href='{{ url_for('add') }}'">Add New Card</button>
-        <button class="edit-button" onclick="editCurrentCard()">Edit Current Card</button>
+
+        <!-- Add and Edit buttons -->
+        <div class="button-group">
+            <button class="add-button" onclick="window.location.href='{{ url_for('add') }}'">Add New Question</button>
+            <button class="edit-button" onclick="editCurrentCard()">Edit Current Question</button>
+        </div>
     </div>
+
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        window.selectedCardId = {{ selected_card_id }};
+    </script>
 </body>
 </html>

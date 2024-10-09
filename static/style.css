@@ -167,10 +167,6 @@ form div {
     text-align: left; /* Left-align the text */
 }
 
-.flashcard-back {
-    transform: rotateY(180deg);
-}
-
 .flashcard-front p, .flashcard-back p {
     font-size: 16px;
     word-wrap: break-word;
@@ -380,6 +376,21 @@ form div {
     background-color: #0056b3;
 }
 
+.btn-alt {
+    top: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4807fb;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-alt:hover {
+    background-color: #7746fe;
+}
+
 /* CARD NUMBER FOR KEEPING TRACK */
 
 .card-number {
@@ -389,3 +400,73 @@ form div {
     font-size: 20px; /* Adjust size as needed */
     color: #000000; /* Green color to match the theme */
 }
+
+/* Messages */
+.flash-messages-container {
+    margin-bottom: 20px; /* Adds space between flash messages and the content */
+}
+
+.flashes {
+    list-style: none; /* Remove default bullet points from the list */
+    padding: 0;
+    margin: 0;
+    text-align: center; /* Center-align the flash messages */
+}
+
+.flashes li {
+    background-color: #f8d7da; /* Example: light red background for error messages */
+    color: #721c24; /* Example: dark red text for error messages */
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+/* Feedback message after submitting an answer */
+.feedback-message {
+    font-size: 1.2em;
+    margin-top: 10px;
+    text-align: center; /* Center-align the feedback message */
+}
+
+.feedback-message.correct {
+    padding: 10px;
+    background-color: #d4edda; /* Light green background for correct answer */
+    color: #155724; /* Dark green text */
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+}
+
+.feedback-message.incorrect {
+    padding: 10px;
+    background-color: #f8d7da; /* Light red background for incorrect answer */
+    color: #721c24; /* Dark red text */
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+}
+
+/* Highlighting correct and incorrect answers */
+.correct-answer {
+    background-color: lightgreen; /* Highlight correct answer in green */
+}
+
+.incorrect-answer {
+    background-color: lightcoral; /* Highlight incorrect answer in red */
+}
+
+/* Button to trigger explanation modal */
+.explanation-btn {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 15px;
+}
+
+.explanation-btn:hover {
+    background-color: #0056b3;
+}
+

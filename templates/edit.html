@@ -12,15 +12,30 @@
         <h2>Edit Flashcard</h2>
         <form id="flashcard-form" method="POST" action="{{ url_for('edit', id=flashcard.id) }}">
             {{ form.hidden_tag() }}
+            <!-- Question input -->
             <div class="form-group">
                 {{ form.question.label }}<br>
                 <div id="question-editor" class="form-control" style="height: 200px;"></div>
                 {{ form.question(rows=15, class="form-control", id="question", style="display:none;") }}<br>
             </div>
-            <div class="form-group">
-                {{ form.answer.label }}<br>
-                {{ form.answer(rows=15, class="form-control", id="answer") }}<br>
+            <!-- Choices input -->
+            <div class="form-group" id="choices-container">
+                <label for="choices">Choices:</label><br>
+                {% for choice in form.choices %}
+                    <div class="choice-entry">
+                        <input type="text" name="choices-{{ loop.index }}-content" value="{{ choice.content.data }}" class="form-control" placeholder="Choice {{ loop.index + 1 }}">
+                        <label>Correct?</label>
+                        <input type="checkbox" name="choices-{{ loop.index }}-is_correct" {% if choice.is_correct.data %}checked{% endif %}>
+                    </div>
+                {% endfor %}
             </div>
+            <!-- Button to dynamically add more choices -->
+            <button type="button" class="btn btn-secondary" id="add-choice">Add Another Choice</button>
+            <div class="form-group">
+                {{ form.explanation.label }}<br>
+                {{ form.explanation(rows=15, class="form-control") }}<br>
+            </div>
+            <!-- Additional content and/or images -->
             <div class="form-group">
                 {{ form.additional_content.label }}<br>
                 <div id="additional-editor" class="form-control" style="height: 200px;"></div>
@@ -31,6 +46,7 @@
             </div>
         </form>
         <form method="POST" action="{{ url_for('delete', id=flashcard.id) }}" style="margin-top: 20px;">
+            {{ form.hidden_tag() }}
             <button type="submit" class="btn btn-danger">Delete</button>
         </form>
         <a href="{{ url_for('index') }}" class="back-link">Back to Flashcards</a>
@@ -44,6 +60,31 @@
             question: {{ flashcard.question | tojson | safe }},
             additional_content: {{ flashcard.additional_content | tojson | safe }}
         };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let choiceCount = document.querySelectorAll('.choice-entry').length;  // Track current number of choices
+            const maxChoices = 7;  // Max limit for choices
+
+            document.getElementById('add-choice').addEventListener('click', function () {
+                if (choiceCount < maxChoices) {
+                    const choicesContainer = document.getElementById('choices-container');
+                    const newChoiceDiv = document.createElement('div');
+                    newChoiceDiv.classList.add('choice-entry');
+                    
+                    // Corrected name attributes to ensure correct indexing for Flask-WTF
+                    newChoiceDiv.innerHTML = `
+                        <input type="text" name="choices-${choiceCount}-content" class="form-control" placeholder="Choice ${choiceCount + 1}">
+                        <label>Correct?</label>
+                        <input type="checkbox" name="choices-${choiceCount}-is_correct">
+                    `;
+                    
+                    choicesContainer.appendChild(newChoiceDiv);  // Add the new choice entry to the form
+                    choiceCount++;  // Increment the count after adding a new choice
+                } else {
+                    alert("You can only add up to 7 choices.");
+                }
+            });
+        });
     </script>
 </body>
 </html>

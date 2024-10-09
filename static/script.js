@@ -174,16 +174,23 @@ document.addEventListener("DOMContentLoaded", function() {
     let currentCardId = null;
     if (hash.startsWith('#flashcard-')) {
         currentCardId = parseInt(hash.replace('#flashcard-', ''), 10);
+    } else if (window.selectedCardId) { 
+        // `selectedCardId` is a variable passed from Flask to the template
+        currentCardId = window.selectedCardId;
     }
     
     //Uncomment the below lines and comment out the shuffle and reorder lines if you want to add and edit new cards.
 
     // Set currentCardIndex based on the card ID from the URL hash or default to the last card
+    let currentCardIndex = 0;
     if (currentCardId !== null) {
         currentCardIndex = cards.findIndex(card => parseInt(card.id.split('-')[1], 10) === currentCardId);
     } else {
-        currentCardIndex = cards.length - 1; // Default to the last card or use shuffle and reorder.
+        currentCardIndex = cards.length - 1; // Default to the last card
     }
+    console.log("currentCardId:", currentCardId);
+    console.log("cards:", cards);
+    console.log("currentCardIndex:", currentCardIndex);
     //shuffleArray(cards);
     //reorderCards(cardContainer, cards);
     // currentCardIndex = 0; // Initialize the currentCardIndex (set last cards.length - 1;)
@@ -251,24 +258,24 @@ function shuffleArray(array) {
 }
 
 function reorderCards(container, cards) {
-    cards.forEach(card => container.appendChild(card)); // Reorder the DOM based on shuffled array
+    cards.forEach(card => container.appendChild(card));
 }
 
 function showCard(index) {
-    const cards = document.querySelectorAll('.flashcard'); // Ensure cards is defined within the function
+    const cards = document.querySelectorAll('.flashcard');
     cards.forEach((card, i) => {
         card.style.display = (i === index) ? 'block' : 'none';
     });
 }
 
 function showNextCard() {
-    const cards = document.querySelectorAll('.flashcard'); // Ensure cards is defined within the function
+    const cards = document.querySelectorAll('.flashcard');
     currentCardIndex = (currentCardIndex + 1) % cards.length;
     showCard(currentCardIndex);
 }
 
 function showPreviousCard() {
-    const cards = document.querySelectorAll('.flashcard'); // Ensure cards is defined within the function
+    const cards = document.querySelectorAll('.flashcard');
     currentCardIndex = (currentCardIndex - 1 + cards.length) % cards.length;
     showCard(currentCardIndex);
 }
@@ -280,6 +287,10 @@ function openModal(event, id) {
 
 function closeModal(id) {
     document.getElementById('modal-' + id).style.display = 'none';
+}
+
+function showExplanationModal() {
+    document.getElementById('explanation-modal').style.display = 'block';
 }
 
 window.onclick = function(event) {

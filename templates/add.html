@@ -12,15 +12,44 @@
         <h2>Add a New Flashcard</h2>
         <form id="flashcard-form" method="POST" action="{{ url_for('add') }}">
             {{ form.hidden_tag() }}
+            <!-- Question input -->
             <div class="form-group">
                 {{ form.question.label }}<br>
                 <div id="question-editor" class="form-control" style="height: 200px;"></div>
                 {{ form.question(rows=15, class="form-control", id="question", style="display:none;") }}<br>
             </div>
-            <div class="form-group">
-                {{ form.answer.label }}<br>
-                {{ form.answer(rows=15, class="form-control") }}<br>
+            <!-- Choices input -->
+            <div class="form-group" id="choices-container">
+                <label for="choices">Choices:</label><br>
+                {{ form.choice_1(class="form-control") }}
+                {{ form.choice_1_correct.label }} {{ form.choice_1_correct() }}<br>
+
+                {{ form.choice_2(class="form-control") }}
+                {{ form.choice_2_correct.label }} {{ form.choice_2_correct() }}<br>
+
+                {{ form.choice_3(class="form-control") }}
+                {{ form.choice_3_correct.label }} {{ form.choice_3_correct() }}<br>
             </div>
+            <div class="form-group" id="additional-choices" style="display: none;">
+                {{ form.choice_4(class="form-control") }}
+                {{ form.choice_4_correct.label }} {{ form.choice_4_correct() }}<br>
+        
+                {{ form.choice_5(class="form-control") }}
+                {{ form.choice_5_correct.label }} {{ form.choice_5_correct() }}<br>
+        
+                {{ form.choice_6(class="form-control") }}
+                {{ form.choice_6_correct.label }} {{ form.choice_6_correct() }}<br>
+        
+                {{ form.choice_7(class="form-control") }}
+                {{ form.choice_7_correct.label }} {{ form.choice_7_correct() }}<br>
+            </div>
+            <!-- Button to dynamically add more choices -->
+            <button type="button" class="btn btn-secondary" id="add-choice">Add Choice</button>
+            <div class="form-group">
+                {{ form.explanation.label }}<br>
+                {{ form.explanation(rows=15, class="form-control") }}<br>
+            </div>
+            <!-- Additional content and/or images -->
             <div class="form-group">
                 {{ form.additional_content.label }}<br>
                 <div id="additional-editor" class="form-control" style="height: 200px;"></div>
@@ -34,5 +63,23 @@
     </div>
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const additionalChoicesDiv = document.getElementById('additional-choices');
+            const addChoiceBtn = document.getElementById('add-choice-btn');
+            let visibleChoices = 0;
+
+            // Show one more choice each time the button is pressed
+            addChoiceBtn.addEventListener('click', function () {
+                visibleChoices++;
+                if (visibleChoices > 4) {
+                    addChoiceBtn.disabled = true; // Disable button after revealing all 4
+                }
+
+                // Make the hidden div visible when button is clicked
+                additionalChoicesDiv.style.display = 'block';
+            });
+        });
+    </script>
 </body>
 </html>
