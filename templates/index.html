@@ -21,23 +21,27 @@
                             <form method="POST" action="{{ url_for('submit_answer', id=card.id) }}">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <div class="form-group">
-                                    {% for choice in card.choices %}
-                                    <div>
-                                        <input type="radio" name="user_answer" value="{{ choice.id }}" id="choice-{{ choice.id }}" 
-                                            {% if user_answer and user_answer == str(choice.id) %}checked{% endif %}>
-                                        
-                                        <label for="choice-{{ choice.id }}"
-                                            {% if feedback == 'correct' and correct_choice.id == choice.id %}
-                                                style="background-color: lightgreen;"  <!-- Highlight correct -->
-                                            {% elif feedback == 'incorrect' and user_answer == str(choice.id) %}
-                                                style="background-color: lightcoral;"  <!-- Highlight wrong answer in red -->
-                                            {% elif feedback == 'incorrect' and correct_choice.id == choice.id %}
-                                                style="background-color: lightgreen;"  <!-- Highlight correct when wrong answer is given -->
-                                            {% endif %}>
-                                            {{ choice.content }}
-                                        </label>
+                                    <div class="choice-entry">
+                                        {% for choice in card.choices %}
+                                        <div>
+                                            <!-- Conditionally switch between radio and checkbox based on whether multiple correct answers exist -->
+                                            <input type="{{ 'checkbox' if multiple_correct else 'radio' }}" name="user_answer" 
+                                                   value="{{ choice.id }}" id="choice-{{ choice.id }}"
+                                                {% if user_answer and str(choice.id) in user_answer %}checked{% endif %}>
+                                            
+                                            <label for="choice-{{ choice.id }}"
+                                                {% if feedback == 'correct' and choice.is_correct %}
+                                                    style="background-color: lightgreen;"  <!-- Highlight correct -->
+                                                {% elif feedback == 'incorrect' and str(choice.id) in user_answer %}
+                                                    style="background-color: lightcoral;"  <!-- Highlight wrong answer in red -->
+                                                {% elif feedback == 'incorrect' and choice.is_correct %}
+                                                    style="background-color: lightgreen;"  <!-- Highlight correct when wrong answer is given -->
+                                                {% endif %}>
+                                                {{ choice.content }}
+                                            </label>
+                                        </div>
+                                        {% endfor %}
                                     </div>
-                                    {% endfor %}
                                 </div>
                                 {% if not show_explanation %}
                                     <button type="submit" class="btn btn-primary">Submit Answer</button>

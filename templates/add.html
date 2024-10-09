@@ -44,7 +44,7 @@
                 {{ form.choice_7_correct.label }} {{ form.choice_7_correct() }}<br>
             </div>
             <!-- Button to dynamically add more choices -->
-            <button type="button" class="btn btn-secondary" id="add-choice">Add Choice</button>
+            <button type="button" class="btn btn-secondary" id="add-choice">Add More Choices</button>
             <div class="form-group">
                 {{ form.explanation.label }}<br>
                 {{ form.explanation(rows=15, class="form-control") }}<br>
@@ -66,7 +66,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const additionalChoicesDiv = document.getElementById('additional-choices');
-            const addChoiceBtn = document.getElementById('add-choice-btn');
+            const addChoiceBtn = document.getElementById('add-choice');
             let visibleChoices = 0;
 
             // Show one more choice each time the button is pressed

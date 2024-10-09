@@ -82,9 +82,10 @@ def submit_answer(id):
     flashcard = Flashcard.query.get_or_404(id)
     user_answer = request.form.get('user_answer')
 
-    correct_choice = next((choice for choice in flashcard.choices if choice.is_correct), None)
+    correct_choices = [choice for choice in flashcard.choices if choice.is_correct]
+    multiple_correct = len(correct_choices) > 1
 
-    feedback = 'correct' if correct_choice and str(correct_choice.id) == user_answer else 'incorrect'
+    feedback = 'correct' if correct_choices and str(correct_choices.id) == user_answer else 'incorrect'
 
     # Make sure you are passing all flashcards or just the relevant ones
     flashcards = Flashcard.query.all()  # This could be one card or all, depending on your logic
@@ -94,7 +95,7 @@ def submit_answer(id):
         flashcards=flashcards,  # Pass the list of flashcards back
         selected_card_id=flashcard.id, 
         feedback=feedback,
-        correct_choice=correct_choice,
+        correct_choices=correct_choices,
         user_answer=user_answer,
         show_explanation=True 
     )

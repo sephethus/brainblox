@@ -470,3 +470,7 @@ form div {
     background-color: #0056b3;
 }
 
+/* Choice format */
+.choice-entry {
+    margin-top: 20px; /* Adds space between individual choices if needed */
+}

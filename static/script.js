@@ -1,3 +1,5 @@
+let currentCardIndex = 0;
+
 document.addEventListener("DOMContentLoaded", function() {
     console.log("DOM fully loaded and parsed");
 
@@ -248,8 +250,6 @@ function formatAnswer(answerElement) {
     }
 }
 
-let currentCardIndex;
-
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -303,9 +303,25 @@ window.onclick = function(event) {
 }
 
 function editCurrentCard() {
-    const cards = document.querySelectorAll('.flashcard'); // Ensure cards is defined within the function
+    const cards = document.querySelectorAll('.flashcard'); // Ensure cards is defined
+    console.log("Edit Current Card Index is now:", currentCardIndex);  // Log the current card index
+    
+    if (cards.length === 0) {
+        console.error("No flashcards found.");
+        return;
+    }
+
+    if (currentCardIndex === undefined || currentCardIndex < 0 || currentCardIndex >= cards.length) {
+        console.error("Invalid currentCardIndex:", currentCardIndex);
+        return;
+    }
+
     const currentCard = cards[currentCardIndex];
+    console.log("currentCard:", currentCard);  // Log the current card element
+
     const cardId = currentCard.id.split('-')[1];
+    console.log("Navigating to edit card with ID:", cardId);  // Log the card ID
+
     window.location.href = `/edit/${cardId}`;
 }
 
