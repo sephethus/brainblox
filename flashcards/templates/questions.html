@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="nav-buttons">
+            <button class="prev" onclick="showPreviousCard()"></button>
+            <div class="card-container">
+                {% for card in flashcards %}
+                <div class="flashcard" id="flashcard-{{ card.id }}" style="display: {% if card.id == selected_card_id %}block{% else %}none{% endif %};">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <p>{{ card.question | safe }}</p>
+                            <p class="card-number" id="card-number-{{ card.id }}"></p>
+                            <form id="answer-form-{{ card.id }}" method="POST" data-url="{% url 'submit_answer' card.id %}">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <div class="choice-entry">
+                                        {% for choice in card.choices.all %}
+                                        <div>
+                                            {% if card.multiple_correct %}
+                                                <input type="checkbox" name="user_answer" value="{{ choice.id }}" id="choice-{{ choice.id }}"
+                                                   {% if user_answers and choice.id|stringformat:"s" in user_answers %}checked{% endif %}>
+                                            {% else %}
+                                                <input type="radio" name="user_answer" value="{{ choice.id }}" id="choice-{{ choice.id }}"
+                                                   {% if user_answers and choice.id|stringformat:"s" in user_answers %}checked{% endif %}>
+                                            {% endif %}
+                                        
+                                            
+                                            <label for="choice-{{ choice.id }}"
+                                            {% if feedback == 'correct' and choice.is_correct %}
+                                                style="background-color: lightgreen;"
+                                            {% elif feedback == 'incorrect' and choice.id|stringformat:"s" in user_answers %}
+                                                style="background-color: lightcoral;"
+                                            {% elif feedback == 'incorrect' and choice.is_correct %}
+                                                style="background-color: lightgreen;"
+                                            {% endif %}>
+                                            {{ choice.content }}
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Answer</button>
+                        
+                                <!-- Hidden Explanation Modal -->
+                                <div id="explanation-modal-{{ card.id }}" class="modal" style="display:none;">
+                                    <div class="modal-content">
+                                        <span class="close" onclick="document.getElementById('explanation-modal-{{ card.id }}').style.display='none'">&times;</span>
+                                        <p id="explanation-content-{{ card.id }}"></p>
+                                    </div>
+                                </div>
+                                <!-- Hidden Explanation Button -->
+                                <button class="btn-alt" id="explanation-btn-{{ card.id }}" style="display:none;" onclick="document.getElementById('explanation-modal-{{ card.id }}').style.display='block'">Show Explanation</button>
+
+                            </form>
+                            {% if card.additional_content and card.additional_content|striptags|length > 0 %}
+                                <script>console.log('Additional content for card {{ card.id }}: {{ card.additional_content }}');</script>
+                                <a href="javascript:void(0);" onclick="openModal(event, {{ card.id }})" class="view-link">View More</a>
+                            {% else %}
+                                <!-- <script>console.log('No additional content for card {{ card.id }}');</script> -->
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div id="modal-{{ card.id }}" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal({{ card.id }})">&times;</span>
+                        <div id="modal-content-{{ card.id }}">{{ card.additional_content | safe }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="next" onclick="showNextCard()"></button>
+        </div>
+
+        <!-- Add and Edit buttons -->
+        <div class="button-group">
+            <button class="add-button" onclick="window.location.href='{% url 'add_flashcard' set_id=set_id %}'">Add New Question</button>
+            <button class="edit-button" onclick="editCurrentCard()">Edit Current Question</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        window.selectedCardId = {% if selected_card_id is not None %}{{ selected_card_id }}{% else %}null{% endif %};
+        const csrfToken = getCookie('csrftoken');
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('[id^="answer-form-"]');
+            forms.forEach(form => {
+                
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();  // Prevent the default form submission
+                    const formData = new FormData(form);
+                    const url = form.getAttribute('data-url'); // Ensure this is pulling the correct URL
+                    
+                    console.log("URL for form submission:", url);
+                    console.log("Submitting Token: ", csrfToken);
+
+                    fetch(url, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': csrfToken,  // Include CSRF token in headers
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        //console.log("This is what was fetched: ", response)
+                        if (!response.ok) {
+                            return response.text().then(text => { throw new Error(text) });
+                        }
+                        return response.json();  // Parse JSON response if successful
+                    })
+                    .then(data => {
+                        // Handle the response data (feedback, explanation, etc.)
+                        displayFeedback(data, form);
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+        });
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Function to display feedback after form submission
+        function displayFeedback(data, form) {
+            const cardId = data.card_id;
+
+            // Highlight correct and incorrect answers
+            data.correct_choice_ids.forEach(id => {
+                const label = form.querySelector(`label[for='choice-${id}']`);
+                if (label) {
+                    label.style.backgroundColor = 'lightgreen';
+                }
+            });
+
+            data.user_answer_ids.forEach(id => {
+                if (!data.correct_choice_ids.includes(id)) {
+                    const label = form.querySelector(`label[for='choice-${id}']`);
+                    if (label) {
+                        label.style.backgroundColor = 'lightcoral';
+                    }
+                }
+            });
+
+            // Hide the submit button
+            const submitButton = form.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.style.display = 'none';
+            }
+
+            if (data.show_explanation) {
+                // Show the explanation button
+                const explanationBtn = document.getElementById(`explanation-btn-${cardId}`);
+                if (explanationBtn) {
+                    explanationBtn.style.display = 'block';
+                }
+
+                // Update the explanation modal content
+                const explanationModalContent = document.getElementById(`explanation-content-${cardId}`);
+                if (explanationModalContent) {
+                    explanationModalContent.textContent = data.explanation;
+                }
+            }
+
+            // Show the explanation button and modal if needed
+            if (data.show_explanation) {
+                showExplanation(data.explanation, form, cardId);
+            }
+        }
+
+        function showExplanation(explanationText, form, cardId) {
+            // Look for the modal specific to this card
+            let explanationModal = document.getElementById(`explanation-modal-${cardId}`);
+            if (!explanationModal) {
+                explanationModal = document.createElement('div');
+                explanationModal.id = `explanation-modal-${cardId}`;
+                explanationModal.className = 'modal';
+
+                const modalContent = document.createElement('div');
+                modalContent.className = 'modal-content';
+
+                const closeBtn = document.createElement('span');
+                closeBtn.className = 'close';
+                closeBtn.innerHTML = '&times;';
+                closeBtn.onclick = function() {
+                    explanationModal.style.display = 'none';
+                };
+
+                const explanationPara = document.createElement('p');
+                explanationPara.innerHTML = explanationText;
+
+                modalContent.appendChild(closeBtn);
+                modalContent.appendChild(explanationPara);
+                explanationModal.appendChild(modalContent);
+                document.body.appendChild(explanationModal);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Exams Available</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h2>Select Your Certification</h2>
+        <ul class="flashcard-sets">
+            {% for set in sets %}
+                <li><a href="{% url 'questions' set.id %}">{{ set.name }}</a></li>
+            {% endfor %}
+        </ul>
+        
+        <!-- Add New Set Button -->
+        <div class="add-set-button">
+            <a href="{% url 'add_flashcard_set' %}" class="btn btn-primary">Add New Set</a>
+        </div>
+    </div>
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

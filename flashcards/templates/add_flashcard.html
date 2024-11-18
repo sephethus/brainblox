@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Flashcard</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+</head>
+<body>
+    <div class="edit-container">
+        <h2>Add a New Flashcard</h2>
+        <form id="flashcard-form" method="POST" action="{% url 'add_flashcard' set_id=set_id %}">
+            {% csrf_token %}
+            
+            <!-- Question input with Quill -->
+            <div class="form-group">
+                {{ form.question.label }}<br>
+                <div id="question-editor" class="form-control" style="height: 200px;"></div>
+                {{ flashcard_form.question }}  <!-- Keep this as a hidden field to store Quill content -->
+            </div>
+            
+            <!-- Choices input -->
+            <div id="choices-container">
+                {{ choice_formset.management_form }}
+                {% for form in choice_formset %}
+                    <div class="form-group">
+                        Option: {{ form.content }}
+                        {{ form.is_correct.label_tag }} {{ form.is_correct }}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Explanation Field -->
+            <div class="form-group">
+                {{ flashcard_form.explanation.label }}<br>
+                {{ flashcard_form.explanation }}<br>
+            </div>
+            
+            <!-- Additional content with Quill -->
+            <div class="form-group">
+                {{ form.additional_content.label }}<br>
+                <div id="additional-editor" class="form-control" style="height: 200px;"></div>
+                {{ flashcard_form.additional_content }}  <!-- Keep this as a hidden field to store Quill content -->
+            </div>
+            
+            <!-- Submit button -->
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" id="submit-button">Add Card</button>
+            </div>
+        </form>
+        <a href="{% url 'index' %}" class="back-link">Back to Flashcards</a>
+    </div>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

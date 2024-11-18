@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Flashcard</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+</head>
+<body>
+    <div class="edit-container">
+        <h2>Edit Flashcard</h2>
+        <form id="flashcard-form" method="POST" action="{% url 'edit_flashcard' flashcard.id %}">
+            {% csrf_token %}
+            <!-- Question input -->
+            <div class="form-group">
+                {{ flashcard_form.question.label }}<br>
+                <div id="question-editor" class="form-control" style="height: 200px;"></div>
+                {{ flashcard_form.question }}<br>
+            </div>
+            <!-- Choices input -->
+            <div class="form-group" id="choices-container">
+                <label for="choices">Choices:</label><br>
+                {{ choice_formset.management_form }}
+                {% for form in choice_formset %}
+                    <div class="form-group">
+                        {{ form.id }}
+                        {{ form.content }}
+                        {{ form.is_correct.label_tag }} {{ form.is_correct }}
+                    </div>
+                {% endfor %}
+            </div>
+            <!-- Button to dynamically add more choices -->
+            <button type="button" class="btn btn-secondary" id="add-choice">Add Another Choice</button>
+
+            <!-- Explanation Field -->
+            <div class="form-group">
+                {{ flashcard_form.explanation.label }}<br>
+                {{ flashcard_form.explanation }}<br>
+            </div>
+
+            <!-- Additional content and/or images -->
+            <div class="form-group">
+                {{ flashcard_form.additional_content.label }}<br>
+                <div id="additional-editor" class="form-control" style="height: 200px;"></div>
+                {{ flashcard_form.additional_content }}<br>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" id="submit-button">Edit Card</button>
+            </div>
+        </form>
+        <form method="POST" action="{% url 'delete_flashcard' flashcard.id %}" style="margin-top: 20px;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+        <a href="{% url 'index' %}" class="back-link">Back to Flashcards</a>
+    </div>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        window.isEditPage = true;
+        // Pass the flashcard content to the script
+        window.flashcardContent = {
+            question: "{{ flashcard.question|escapejs }}",  // Escape JS special characters
+            additional_content: "{{ flashcard.additional_content|escapejs }}"
+        };
+    </script>
+</body>
+</html>

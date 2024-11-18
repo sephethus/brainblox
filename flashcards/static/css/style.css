@@ -1,0 +1,552 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #ffffff;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+/* FORM FOR ADD & EDIT */
+
+.form-group {
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+form div {
+    margin-bottom: 10px;
+}
+
+
+.edit-container {
+    width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    position: relative;
+}
+
+.edit-container h2 {
+    text-align: center;
+}
+
+.edit-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-container .form-group {
+    margin-bottom: 20px;
+}
+
+.edit-container .form-control {
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.edit-container .btn-primary {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.edit-container .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.edit-container .btn-danger {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.edit-container .btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* CONTAINER THAT HOLDS THE FLASHCARDS */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    max-width: 600px;
+}
+
+.card-container {
+    width: 900px; /* Ensure this matches the width of the flashcard */
+    height: 600px; /* Ensure this matches the height of the flashcard */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto; /* Center the card container */
+}
+
+/* FLASHCARD SETTINGS */
+
+.flashcard {
+    perspective: 1000px;
+    width: 100%; /* Maintain 100% width within the container */
+    height: 100%; /* Maintain 100% height within the container */
+}
+
+.flashcard-inner {
+    width: 900px;
+    height: 600px;
+    text-align: left;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    position: relative;
+}
+
+.flashcard.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+.flashcard-front, .flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    color: #000000; /* Green color */
+    /* font-family: 'VT323', monospace; /* Apply VT323 font (does not support bionic text) */
+    font-family: 'Ariel', Arial, Helvetica, sans-serif;
+    border: 1px solid #000000;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.flashcard-content {
+    width: 100%;
+    text-align: left; /* Left-align the text */
+}
+
+.flashcard-front p, .flashcard-back p {
+    font-size: 16px;
+    word-wrap: break-word;
+    white-space: pre-wrap;  /* Preserve formatting */
+    text-align: left;
+    line-height: 1.0;
+    margin: 0;
+}
+
+.flashcard-front p strong,
+.flashcard-back p strong {
+    font-weight: bold;
+}
+
+.flashcard-front img {
+    max-width: 90%;
+    max-height: 90%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    padding: 10px; /* Add padding to avoid overlapping with text */
+    box-sizing: border-box;
+    border: #000000;
+}
+
+
+/* NAV */
+
+.view-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #0fe8b2;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    align-self: center;
+}
+
+.view-link:hover {
+    background-color: hsl(120, 100%, 50%);
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px; /* Ensure this matches the width of the card container */
+    margin-bottom: 20px;
+}
+
+.nav-buttons .prev, .nav-buttons .next {
+    height: 600px; /* Ensure this matches the height of the card */
+    width: 200px; /* Updated width */
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    margin: 0 15px; /* Adding margin between the buttons and the card container */
+    position: relative;
+}
+
+.nav-buttons .prev:before,
+.nav-buttons .next:before {
+    content: '';
+    display: inline-block;
+    border: solid #000000;
+    border-width: 0 20px 20px 0;
+    padding: 40px;
+    transform: rotate(135deg);
+    position: absolute;
+}
+
+.nav-buttons .prev:before {
+    transform: translate(-50%, -50%) rotate(135deg); /* Center and rotate for left-facing arrow */
+}
+
+.nav-buttons .next:before {
+    transform: translate(-50%, -50%) rotate(-45deg); /* Center and rotate for right-facing arrow */
+}
+
+.add-button, .edit-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #0fe8b2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin: 5px;
+}
+
+.add-button:hover, .edit-button:hover {
+    background-color: #00FF00;
+}
+
+/* ADDITIONAL INFO BOX */
+
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgb(0, 0, 0); 
+    background-color: rgba(0,0,0,0.4); 
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    margin: 5% auto; 
+    padding: 20px;
+    border: 1px solid #000000;
+    width: 80%; 
+    max-width: 600px;
+    color: #000000; /* Green color */
+    /* font-family: 'VT323', monospace; /* Apply VT323 font (does not support bionic text) */
+    font-family: 'Ariel', Arial, Helvetica, sans-serif;
+}
+
+.modal-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+}
+
+.modal-content pre {
+    white-space: pre-wrap;       /* Wraps long lines */
+    word-wrap: break-word;       /* Breaks words if needed */
+    word-break: break-word;      /* Ensures words break at appropriate points */
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Image Modal */
+
+/* Modal styles for full-size images */
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9);
+}
+
+.image-modal-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+}
+
+.image-modal-content img {
+    width: 100%;
+    height: auto;
+}
+
+.image-modal .close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.image-modal .close:hover,
+.image-modal .close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* EDIT/ADD PAGE BUTTONS */
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.btn-alt {
+    top: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4807fb;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-alt:hover {
+    background-color: #7746fe;
+}
+
+/* CARD NUMBER FOR KEEPING TRACK */
+
+.card-number {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px; /* Adjust size as needed */
+    color: #000000; /* Green color to match the theme */
+}
+
+/* Messages */
+.flash-messages-container {
+    margin-bottom: 20px; /* Adds space between flash messages and the content */
+}
+
+.flashes {
+    list-style: none; /* Remove default bullet points from the list */
+    padding: 0;
+    margin: 0;
+    text-align: center; /* Center-align the flash messages */
+}
+
+.flashes li {
+    background-color: #f8d7da; /* Example: light red background for error messages */
+    color: #721c24; /* Example: dark red text for error messages */
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+/* Feedback message after submitting an answer */
+.feedback-message {
+    font-size: 1.2em;
+    margin-top: 10px;
+    text-align: center; /* Center-align the feedback message */
+}
+
+.feedback-message.correct {
+    padding: 10px;
+    background-color: #d4edda; /* Light green background for correct answer */
+    color: #155724; /* Dark green text */
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+}
+
+.feedback-message.incorrect {
+    padding: 10px;
+    background-color: #f8d7da; /* Light red background for incorrect answer */
+    color: #721c24; /* Dark red text */
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+}
+
+/* Highlighting correct and incorrect answers */
+.correct-answer {
+    background-color: lightgreen; /* Highlight correct answer in green */
+}
+
+.incorrect-answer {
+    background-color: lightcoral; /* Highlight incorrect answer in red */
+}
+
+/* Button to trigger explanation modal */
+.explanation-btn {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 15px;
+}
+
+.explanation-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Choice format */
+.choice-entry {
+    margin-top: 20px; /* Adds space between individual choices if needed */
+}
+
+/* Add Set */
+.add-set-button {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.add-set-button .btn {
+    padding: 10px 20px;
+    font-size: 1.1em;
+}
+
+/* Center and style the add flashcard set container */
+.fs-container {
+    max-width: 500px;  /* Restrict width for readability */
+    padding: 20px;
+    margin: 30px auto;
+    background-color: #f9f9f9;  /* Light background color for contrast */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Headings inside containers */
+.fs-container h2 {
+    font-size: 1.8em;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Style for form buttons */
+.btn-primary {
+    background-color: #007bff;
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* Back link button */
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #007bff;
+    text-decoration: none;
+    text-align: center;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* Form inputs */
+form input[type="text"], form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+}
+
+

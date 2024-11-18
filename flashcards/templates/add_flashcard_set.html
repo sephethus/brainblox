@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Flashcard Set</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="fs-container">
+        <h2>Create New Flashcard Set</h2>
+        
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}  <!-- Renders the form fields -->
+            <button type="submit" class="btn btn-primary">Create Set</button>
+        </form>
+        
+        <!-- Link back to main flashcard sets page -->
+        <a href="{% url 'index' %}" class="back-link">Back to Sets</a>
+    </div>
+</body>
+</html>
